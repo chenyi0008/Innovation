@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 type InspectAlarm struct {
 	gorm.Model
-	InspectId    int64
-	AlarmId      int64
+	InspectId    uint
+	AlarmId      uint
 	IsBuzzing    bool
 	IsFlashing   bool
 	ShowLocation bool

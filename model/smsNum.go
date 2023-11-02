@@ -6,5 +6,5 @@ type SmsNum struct {
 	gorm.Model
 	IsAlarm   bool
 	Num       int64
-	InspectId int64
+	InspectId uint
 }

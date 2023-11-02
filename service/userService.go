@@ -3,6 +3,8 @@ package service
 import (
 	"Innovation/model"
 	"Innovation/utils"
+	"context"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +22,13 @@ func LoginService(c *gin.Context) {
 
 	if user, flag := model.UserLogin(request.Username, request.Password); flag {
 		token := utils.GetToken(user.Account, user.ID)
-		c.JSON(200, model.NewResponse(1, "登录成功", token))
+		ctx := context.Background()
+
+		if err := utils.GetRedisHelper().Set(ctx, token, utils.Marshal(user), time.Hour*24).Err(); err != nil {
+			c.JSON(500, model.NewResponse(0, err.Error(), nil))
+			return
+		}
+		c.JSON(200, model.NewResponse(1, "登录成功", "Bearer "+token))
 		return
 	} else {
 		c.JSON(200, model.NewResponse(0, "账号或密码输入有误", nil))

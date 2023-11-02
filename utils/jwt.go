@@ -12,7 +12,7 @@ var jwtKey = []byte("my_secret_key")
 // 定义一个Claims结构体，包含了用户信息和JWT标准声明
 type Claims struct {
 	Username string `json:"username"`
-	UserId   int    `json:"userId"`
+	UserId   uint   `json:"userId"`
 	jwt.StandardClaims
 }
 
@@ -21,7 +21,7 @@ func GetToken(username string, userId uint) string {
 	// 创建一个新的JWT，使用HS256算法进行签名
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
 		Username: username,
-		UserId:   int(userId),
+		UserId:   userId,
 		StandardClaims: jwt.StandardClaims{
 			// 设置令牌过期时间为24小时后
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
@@ -35,7 +35,7 @@ func GetToken(username string, userId uint) string {
 	return tokenString
 }
 
-func ParseToken(tokenString string) (bool, string, int) {
+func ParseToken(tokenString string) (bool, string, uint) {
 
 	// 使用claims解析token
 	tkn, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {

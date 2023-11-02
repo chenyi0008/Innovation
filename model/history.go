@@ -8,5 +8,5 @@ type History struct {
 	Notes     string
 	VideoId   string
 	PicId     string
-	InspectId int64
+	InspectId uint
 }

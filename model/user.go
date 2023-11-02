@@ -7,9 +7,9 @@ import (
 
 type User struct {
 	gorm.Model
-	Account              string
-	Password             string
-	InspectEquipmentList []InspectEquipment `gorm:"foreignKey:UserId"`
+	Account     string
+	Password    string
+	InspectList []Inspect `gorm:"foreignKey:UserId"`
 }
 
 func UserLogin(account, password string) (*User, bool) {
@@ -38,5 +38,13 @@ func UserCreate(user *User) {
 	err := db.Create(user).Error
 	if err != nil {
 		println(err)
+	}
+}
+
+func UserSave(user *User) {
+	db := config.GetDb()
+	err := db.Create(user).Error
+	if err != nil {
+		panic(err)
 	}
 }
