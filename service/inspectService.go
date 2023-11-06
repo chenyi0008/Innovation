@@ -50,7 +50,7 @@ func InspectGetAll(c *gin.Context) {
 
 }
 
-type updateRequest struct {
+type inspectUpdateRequest struct {
 	Status   string
 	Name     string
 	Location string
@@ -58,7 +58,7 @@ type updateRequest struct {
 }
 
 func InspectUpdate(c *gin.Context) {
-	var request *updateRequest
+	var request *inspectUpdateRequest
 	c.BindJSON(&request)
 
 	id := utils.GetContextData(c, "id")

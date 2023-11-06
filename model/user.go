@@ -10,6 +10,7 @@ type User struct {
 	Account     string
 	Password    string
 	InspectList []Inspect `gorm:"foreignKey:UserId"`
+	AlarmList   []Alarm   `gorm:"foreignKey:UserId"`
 }
 
 func UserLogin(account, password string) (*User, bool) {

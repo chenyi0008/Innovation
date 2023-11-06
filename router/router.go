@@ -21,5 +21,13 @@ func NewRouter() *gin.Engine {
 		PUT("", service.InspectUpdate).
 		DELETE("/:id", service.InspectDeleteById)
 
+	r.Group("/alarms", middleware.AuthMiddleware()).
+		POST("", service.AlarmCreate).
+		GET("", service.AlarmGetAll).
+		PUT("", service.AlarmUpdate).
+		DELETE("/:id", service.AlarmDeleteById)
+
+	r.Group("/histories").
+		POST("/alarm", service.AlarmAndUpload)
 	return r
 }

@@ -13,7 +13,12 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 验证请求
 		token := c.GetHeader("Authorization")
-		token = strings.Split(token, " ")[1]
+		arr := strings.Split(token, " ")
+		if len(arr) < 2 {
+			c.AbortWithStatusJSON(403, model.NewResponse(0, "token无效", nil))
+			return
+		}
+		token = arr[1]
 		flag, username, id := utils.ParseToken(token)
 		println("token:", token)
 		ctx := context.Background()
@@ -36,7 +41,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		println("interceptor:", id)
 		c.Set("username", username)
 		c.Set("id", id)
 

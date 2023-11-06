@@ -9,6 +9,8 @@ import (
 func main() {
 	config.InitMysql()
 	utils.InitRedis()
+	utils.Init(1)
+	utils.InitConfig()
 	r := router.NewRouter()
 
 	//db := config.GetDb()
@@ -20,5 +22,5 @@ func main() {
 	//	&model.SmsNum{},
 	//	&model.AlarmNum{})
 
-	r.Run("0.0.0.0:8088") // 监听并在 0.0.0.0:8080 上启动服务
+	r.Run("0.0.0.0:9000") // 监听并在 0.0.0.0:8080 上启动服务
 }

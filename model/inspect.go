@@ -2,6 +2,7 @@ package model
 
 import (
 	"Innovation/config"
+	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -25,10 +26,10 @@ func InspcetSave(inspect *Inspect) {
 	}
 }
 
-func InspectGetAll(id uint) []Inspect {
+func InspectGetAll(userId uint) []Inspect {
 	db := config.GetDb()
 	var inspectList []Inspect
-	err := db.Where("user_id = ?", id).Find(&inspectList).Error
+	err := db.Where("user_id = ?", userId).Find(&inspectList).Error
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +41,7 @@ func InspectGetById(id uint) *Inspect {
 	var inspect Inspect
 	err := db.First(&inspect, id).Error
 	if err != nil {
-		println(err.Error())
+		fmt.Println(err.Error())
 	}
 	return &inspect
 }
