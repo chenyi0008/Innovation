@@ -97,3 +97,95 @@ func InspectDeleteById(c *gin.Context) {
 	model.InspectDeleteById(inspectId)
 	c.AbortWithStatusJSON(200, model.NewResponse(1, "删除成功", nil))
 }
+
+// InspectBindAlarm 绑定/**
+func InspectBindAlarm(c *gin.Context) {
+	userId := utils.GetContextData(c, "id")
+	var inspectAlarm *model.InspectAlarm
+	err := c.BindJSON(&inspectAlarm)
+	if err != nil {
+		c.AbortWithStatusJSON(500, model.NewResponse(0, err.Error(), nil))
+		return
+	}
+
+	inspect := model.InspectGetById(inspectAlarm.InspectId)
+	if inspect.UserId != userId {
+		c.AbortWithStatusJSON(403, model.NewResponse(0, "你没有权限访问此资源！", nil))
+		return
+	}
+	alarm := model.AlarmGetById(inspectAlarm.AlarmId)
+	if alarm.UserId != userId {
+		c.AbortWithStatusJSON(403, model.NewResponse(0, "你没有权限访问此资源！", nil))
+		return
+	}
+
+	save := model.InspectAlarmSave(inspectAlarm)
+	if save {
+		c.AbortWithStatusJSON(200, model.Succeed("保存成功", nil))
+		return
+	} else {
+		c.AbortWithStatusJSON(500, model.Failed("保存失败", nil))
+		return
+	}
+}
+
+// InspectUnBindAlarm 解绑/*
+func InspectUnBindAlarm(c *gin.Context) {
+	userId := utils.GetContextData(c, "id")
+
+	idStr := c.Param("id")
+	bindId, err := strconv.Atoi(idStr)
+	bingIdUint := uint(bindId)
+
+	if err != nil {
+		c.AbortWithStatusJSON(500, model.NewResponse(0, err.Error(), nil))
+		return
+	}
+
+	flag2, inspectAlarm := model.InspectAlarmGetById(bingIdUint)
+	if !flag2 {
+		c.AbortWithStatusJSON(500, model.NewResponse(0, "查询不到此记录", nil))
+		return
+	}
+
+	flag, inspect := model.InspectGetInfoById(inspectAlarm.InspectId)
+	if !flag {
+		c.AbortWithStatusJSON(500, model.NewResponse(0, "查询不到此记录", nil))
+		return
+	}
+	if inspect.UserId != userId {
+		c.AbortWithStatusJSON(403, model.NewResponse(0, "你没有权限访问此资源！", nil))
+		return
+	}
+
+	remove := model.InspectAlarmRemove(bingIdUint)
+	if remove {
+		c.AbortWithStatusJSON(200, model.Succeed("保存成功", nil))
+		return
+	} else {
+		c.AbortWithStatusJSON(500, model.Failed("保存失败", nil))
+		return
+	}
+}
+
+func InspectGetInfoById(c *gin.Context) {
+	userId := utils.GetContextData(c, "id")
+	inspectIdStr := c.Param("id")
+	inspectId, err := strconv.Atoi(inspectIdStr)
+	if err != nil {
+		c.AbortWithStatusJSON(500, model.Failed("传参出错", nil))
+		return
+	}
+	flag, inspect := model.InspectGetInfoById(uint(inspectId))
+	if !flag {
+		c.AbortWithStatusJSON(500, model.Failed("查询失败", nil))
+		return
+	}
+	if inspect.UserId != userId {
+		c.AbortWithStatusJSON(403, model.Failed("你没有权限访问此资源！", nil))
+		return
+	}
+
+	c.AbortWithStatusJSON(200, model.Succeed("查询成功", inspect))
+	return
+}

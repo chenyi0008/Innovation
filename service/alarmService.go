@@ -92,5 +92,3 @@ func AlarmDeleteById(c *gin.Context) {
 	model.AlarmDeleteById(alarmId)
 	c.AbortWithStatusJSON(200, model.NewResponse(1, "删除成功", nil))
 }
-
-z

@@ -13,3 +13,19 @@ func NewResponse(code int, msg string, data interface{}) *Response {
 		Data: data,
 	}
 }
+
+func Succeed(msg string, data interface{}) *Response {
+	return &Response{
+		Code: 1,
+		Msg:  msg,
+		Data: data,
+	}
+}
+
+func Failed(msg string, data interface{}) *Response {
+	return &Response{
+		Code: 0,
+		Msg:  msg,
+		Data: data,
+	}
+}

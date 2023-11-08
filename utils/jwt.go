@@ -24,7 +24,7 @@ func GetToken(username string, userId uint) string {
 		UserId:   userId,
 		StandardClaims: jwt.StandardClaims{
 			// 设置令牌过期时间为24小时后
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 24 * 24).Unix(),
 		},
 	})
 	// 对JWT进行签名，并将签名结果转换为字符串形式

@@ -56,3 +56,17 @@ func InspectDeleteById(id uint) bool {
 	}
 	return true
 }
+
+func InspectGetInfoById(id uint) (bool, *Inspect) {
+	db := config.GetDb()
+	var inspect Inspect
+	err := db.Preload("AlarmEquipmentList").
+		Preload("HistoryList").
+		Preload("AlarmNumList").
+		Preload("SmsNumList").First(&inspect, id).Error
+	if err != nil {
+		fmt.Println(err.Error())
+		return false, nil
+	}
+	return true, &inspect
+}
