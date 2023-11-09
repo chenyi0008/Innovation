@@ -23,3 +23,13 @@ func HistorySave(history *History) bool {
 	}
 	return true
 }
+
+func HistoryGetAll(userId uint) (bool, []History) {
+	db := config.GetDb()
+	var historyList []History
+	err := db.Where("user_id = ?", userId).Find(historyList).Error
+	if err != nil {
+		return false, nil
+	}
+	return true, historyList
+}

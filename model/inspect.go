@@ -12,7 +12,7 @@ type Inspect struct {
 	Name               string
 	Location           string
 	UserId             uint
-	AlarmEquipmentList []Alarm    `gorm:"many2many:InspectAlarm;"`
+	AlarmEquipmentList []Alarm    `gorm:"many2many:InspectAlarm"`
 	HistoryList        []History  `gorm:"foreignKey:InspectId"`
 	SmsNumList         []SmsNum   `gorm:"foreignKey:InspectId"`
 	AlarmNumList       []AlarmNum `gorm:"foreignKey:InspectId"`
@@ -69,4 +69,14 @@ func InspectGetInfoById(id uint) (bool, *Inspect) {
 		return false, nil
 	}
 	return true, &inspect
+}
+
+func InspectUnbindAlarm(inspect *Inspect, alarm *Alarm) bool {
+	db := config.GetDb()
+	err := db.Model(inspect).Association("AlarmEquipmentList").Delete(alarm)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	return true
 }

@@ -11,6 +11,7 @@ func main() {
 	utils.InitRedis()
 	utils.Init(1)
 	utils.InitConfig()
+	utils.QiniuConfigInit()
 	r := router.NewRouter()
 
 	//db := config.GetDb()

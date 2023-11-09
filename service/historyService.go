@@ -5,7 +5,6 @@ import (
 	"Innovation/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"strconv"
 )
 
@@ -18,11 +17,37 @@ func AlarmAndUpload(c *gin.Context) {
 	if err2 != nil {
 		panic(err2)
 	}
-	path := viper.GetString("file.path") + strconv.Itoa(int(id)) + "_" + file.Filename
-	fmt.Println("path:", path)
-	err = c.SaveUploadedFile(file, path)
-	if err != nil {
-		fmt.Println(err.Error())
+
+	inspectId := c.Query("id")
+	inspectIdUint, err3 := strconv.Atoi(inspectId)
+	if err3 != nil {
+		c.AbortWithStatusJSON(500, model.NewResponse(0, "请正确传递检测设备Id", nil))
+		return
+	}
+
+	inspect := model.InspectGetById(uint(inspectIdUint))
+	fileName := strconv.Itoa(int(id)) + "_" + file.Filename
+	history := model.History{
+		InspectId: inspect.ID,
+		Position:  inspect.Location,
+		VideoId:   fileName,
+		PicId:     "0",
+	}
+
+	save := model.HistorySave(&history)
+	if !save {
+		c.AbortWithStatusJSON(500, model.NewResponse(0, "保存记录失败！", nil))
+		return
+	}
+
+	bytes, err5 := utils.ConvertFileHeaderToBytes(file)
+
+	utils.QiniuUpload(fileName, bytes)
+	videoFile, err4 := utils.ExtractImageFromMP4(bytes)
+	utils.QiniuUpload("output.jpg", videoFile)
+
+	if err != nil || err4 != nil || err5 != nil {
+		fmt.Println(err4.Error())
 		c.AbortWithStatusJSON(500, model.NewResponse(0, "保存视频失败！", nil))
 		return
 	} else {
@@ -30,3 +55,15 @@ func AlarmAndUpload(c *gin.Context) {
 		return
 	}
 }
+
+func HistoryDownload(c *gin.Context) {
+	fileId := c.Query("fileId")
+	download := utils.QiniuDownload(fileId)
+	c.AbortWithStatusJSON(200, model.Succeed("视频查询成功", download))
+	return
+}
+
+//func HistoryGetAll(c *gin.Context){
+//	userId := utils.GetContextData(c, "id")
+//
+//}

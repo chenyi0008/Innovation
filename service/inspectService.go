@@ -3,6 +3,7 @@ package service
 import (
 	"Innovation/model"
 	"Innovation/utils"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"strconv"
@@ -133,37 +134,36 @@ func InspectBindAlarm(c *gin.Context) {
 func InspectUnBindAlarm(c *gin.Context) {
 	userId := utils.GetContextData(c, "id")
 
-	idStr := c.Param("id")
-	bindId, err := strconv.Atoi(idStr)
-	bingIdUint := uint(bindId)
+	inspectIdStr := c.Query("inspectId")
+	alarmIdStr := c.Query("alarmId")
+	fmt.Println("inspectId:", inspectIdStr)
+	fmt.Println("alarmId:", alarmIdStr)
 
-	if err != nil {
-		c.AbortWithStatusJSON(500, model.NewResponse(0, err.Error(), nil))
+	inspectId, err2 := strconv.Atoi(inspectIdStr)
+	alarmId, err3 := strconv.Atoi(alarmIdStr)
+
+	if err2 != nil || err3 != nil {
+		c.AbortWithStatusJSON(500, model.NewResponse(0, "参数请传整数", nil))
 		return
 	}
 
-	flag2, inspectAlarm := model.InspectAlarmGetById(bingIdUint)
-	if !flag2 {
-		c.AbortWithStatusJSON(500, model.NewResponse(0, "查询不到此记录", nil))
-		return
-	}
+	inspectIdUint := uint(inspectId)
+	alarmIdUint := uint(alarmId)
 
-	flag, inspect := model.InspectGetInfoById(inspectAlarm.InspectId)
-	if !flag {
-		c.AbortWithStatusJSON(500, model.NewResponse(0, "查询不到此记录", nil))
-		return
-	}
+	inspect := model.InspectGetById(inspectIdUint)
+	alarm := model.AlarmGetById(alarmIdUint)
+
 	if inspect.UserId != userId {
-		c.AbortWithStatusJSON(403, model.NewResponse(0, "你没有权限访问此资源！", nil))
+		c.AbortWithStatusJSON(403, model.NewResponse(0, "你没有权限访问！", nil))
 		return
 	}
 
-	remove := model.InspectAlarmRemove(bingIdUint)
+	remove := model.InspectUnbindAlarm(inspect, alarm)
 	if remove {
-		c.AbortWithStatusJSON(200, model.Succeed("保存成功", nil))
+		c.AbortWithStatusJSON(200, model.Succeed("解绑成功", nil))
 		return
 	} else {
-		c.AbortWithStatusJSON(500, model.Failed("保存失败", nil))
+		c.AbortWithStatusJSON(500, model.Failed("解绑失败", nil))
 		return
 	}
 }
