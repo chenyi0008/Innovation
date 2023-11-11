@@ -2,6 +2,7 @@ package main
 
 import (
 	"Innovation/config"
+	"Innovation/mqtt"
 	"Innovation/router"
 	"Innovation/utils"
 )
@@ -13,7 +14,7 @@ func main() {
 	utils.InitConfig()
 	utils.QiniuConfigInit()
 	r := router.NewRouter()
-
+	mqtt.MqttMain()
 	//db := config.GetDb()
 	//db.AutoMigrate(&model.User{},
 	//	&model.Alarm{},
