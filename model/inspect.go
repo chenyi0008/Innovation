@@ -72,6 +72,20 @@ func InspectGetInfoById(id uint) (bool, *Inspect) {
 	return true, &inspect
 }
 
+func InspectGetInfoBySerialNum(serialNum string) (bool, *Inspect) {
+	db := config.GetDb()
+	var inspect Inspect
+	err := db.Preload("AlarmEquipmentList").
+		Preload("HistoryList").
+		Preload("AlarmNumList").
+		Preload("SmsNumList").Where("serial_num = ?", serialNum).First(&inspect).Error
+	if err != nil {
+		fmt.Println(err.Error())
+		return false, nil
+	}
+	return true, &inspect
+}
+
 func InspectUnbindAlarm(inspect *Inspect, alarm *Alarm) bool {
 	db := config.GetDb()
 	err := db.Model(inspect).Association("AlarmEquipmentList").Delete(alarm)
@@ -80,4 +94,14 @@ func InspectUnbindAlarm(inspect *Inspect, alarm *Alarm) bool {
 		return false
 	}
 	return true
+}
+
+func InspectGetAllMqtt() []Inspect {
+	db := config.GetDb()
+	var inspectList []Inspect
+	err := db.Find(&inspectList).Error
+	if err != nil {
+		panic(err)
+	}
+	return inspectList
 }

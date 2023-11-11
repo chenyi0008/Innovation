@@ -18,6 +18,7 @@ const (
 var (
 	flag      = false
 	topicList []string
+	client    mqtt.Client
 )
 
 func MqttTopicListAppend(topic string) {
@@ -25,7 +26,7 @@ func MqttTopicListAppend(topic string) {
 }
 
 func MqttInspectListInit() {
-	inspectList := *model.AlarmGetAllMqtt()
+	inspectList := model.InspectGetAllMqtt()
 	for _, inspect := range inspectList {
 		serialNum := inspect.SerialNum
 		s := fmt.Sprintf("device/detect/%s/warning", serialNum)
@@ -43,7 +44,7 @@ func MqttMain() {
 	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
-	client := mqtt.NewClient(opts)
+	client = mqtt.NewClient(opts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		panic(token.Error())
 	}
@@ -101,11 +102,10 @@ func listenSubInit(client mqtt.Client, topic string) {
 
 }
 
-func publish(client mqtt.Client, topic string, text string) {
-
+func publish(topic string, text string) {
+	fmt.Println("publish topic:", topic)
 	token := client.Publish(topic, 0, false, text)
-	token.Wait()
-	time.Sleep(time.Second)
+	_ = token
 
 }
 

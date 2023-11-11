@@ -1,6 +1,12 @@
 package mqtt
 
-import "strings"
+import (
+	"Innovation/model"
+	"encoding/json"
+	"fmt"
+	"strings"
+	"time"
+)
 
 // ProcessRequest 处理mqtt请求
 func ProcessRequest(topic, payload string) {
@@ -16,6 +22,7 @@ func ProcessRequest(topic, payload string) {
 	case "warning":
 		warningDistribute(serialNum, instruct)
 	case "detect":
+		detectDistribute(serialNum, instruct)
 	}
 }
 
@@ -33,6 +40,31 @@ func detectDistribute(serialNum, instruct string) {
 	}
 }
 
-func detectWarning(serialNum string) {
+type detectWarningPublishInfo struct {
+	Timestamp int64 `json:"timestamp"`
+}
 
+func detectWarning(serialNum string) {
+	flag, inspect := model.InspectGetInfoBySerialNum(serialNum)
+	if flag {
+		alarmList := inspect.AlarmEquipmentList
+		for _, alarm := range alarmList {
+			topic := fmt.Sprintf("device/warning/%s/warning", alarm.SerialNum)
+			publishInfo := detectWarningPublishInfo{
+				Timestamp: getTimestamp(),
+			}
+			marshal, err := json.Marshal(publishInfo)
+			if err != nil {
+				panic(err)
+			}
+			println("marshal:", string(marshal))
+			publish(topic, string(marshal))
+		}
+
+	}
+}
+
+func getTimestamp() int64 {
+	// 获取当前时间的Unix时间戳（纳秒）
+	return time.Now().UnixNano()
 }
