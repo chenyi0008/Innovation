@@ -14,6 +14,7 @@ func main() {
 	utils.InitConfig()
 	utils.QiniuConfigInit()
 	r := router.NewRouter()
+	mqtt.MqttInspectListInit()
 	mqtt.MqttMain()
 	//db := config.GetDb()
 	//db.AutoMigrate(&model.User{},

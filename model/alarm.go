@@ -54,3 +54,13 @@ func AlarmDeleteById(id uint) bool {
 	}
 	return true
 }
+
+func AlarmGetAllMqtt() *[]Alarm {
+	db := config.GetDb()
+	var alarmList []Alarm
+	err := db.Find(&alarmList).Error
+	if err != nil {
+		panic(alarmList)
+	}
+	return &alarmList
+}

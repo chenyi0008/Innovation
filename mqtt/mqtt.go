@@ -1,6 +1,7 @@
 package mqtt
 
 import (
+	"Innovation/model"
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"time"
@@ -11,12 +12,27 @@ const (
 	password = "caibin@123"
 	port     = 1883
 	broker   = "106.52.223.188"
-	clientId = "go_mqtt_client"
+	clientId = "go_mqtt_client2"
 )
 
 var (
-	flag = false
+	flag      = false
+	topicList []string
 )
+
+func MqttTopicListAppend(topic string) {
+	topicList = append(topicList, topic)
+}
+
+func MqttInspectListInit() {
+	inspectList := *model.AlarmGetAllMqtt()
+	for _, inspect := range inspectList {
+		serialNum := inspect.SerialNum
+		s := fmt.Sprintf("device/detect/%s/warning", serialNum)
+		MqttTopicListAppend(s)
+	}
+
+}
 
 func MqttMain() {
 	opts := mqtt.NewClientOptions()
@@ -31,7 +47,6 @@ func MqttMain() {
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		panic(token.Error())
 	}
-	var topicList []string
 
 	topicList = append(topicList, "topic/test")
 	topicList = append(topicList, "topic1")
@@ -40,6 +55,7 @@ func MqttMain() {
 
 	for _, topic := range topicList {
 		listenSubInit(client, topic)
+		fmt.Println("subscribe topic:", topic)
 	}
 	time.Sleep(time.Second)
 
@@ -58,16 +74,7 @@ var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Me
 	}
 
 	if payload != ReadFromMap(topic) {
-		switch topic {
-		case "topic/test":
-			fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
-		case "topic1":
-			fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
-		case "topic2":
-			fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
-		case "topic3":
-			fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
-		}
+		ProcessRequest(topic, payload)
 		WriteToMap(topic, payload)
 	}
 }
