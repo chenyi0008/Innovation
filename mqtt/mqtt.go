@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	strMap = make(map[string]string)
+	flag = false
 )
 
 func MqttMain() {
@@ -39,12 +39,11 @@ func MqttMain() {
 	topicList = append(topicList, "topic3")
 
 	for _, topic := range topicList {
-		go listenSub(client, topic)
+		listenSubInit(client, topic)
 	}
+	time.Sleep(time.Second)
 
-	for _, topic := range topicList {
-		messagePubHandlerInit(client, topic)
-	}
+	flag = true
 
 }
 
@@ -52,8 +51,13 @@ func MqttMain() {
 var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	topic := msg.Topic()
 	payload := string(msg.Payload())
-	//fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
-	if payload != strMap[topic] {
+	//初始化
+	if !flag {
+		WriteToMap(topic, payload)
+		return
+	}
+
+	if payload != ReadFromMap(topic) {
 		switch topic {
 		case "topic/test":
 			fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
@@ -64,15 +68,8 @@ var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Me
 		case "topic3":
 			fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
 		}
-		strMap[topic] = payload
+		WriteToMap(topic, payload)
 	}
-}
-
-// 初始化
-var messagePubHandlerInit mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	topic := msg.Topic()
-	payload := string(msg.Payload())
-	strMap[topic] = payload
 }
 
 var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
@@ -84,10 +81,17 @@ var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err
 }
 
 func listenSub(client mqtt.Client, topic string) {
-	for {
-		time.Sleep(time.Second)
-		sub(client, topic)
-	}
+	//for {
+	time.Sleep(time.Second)
+	sub(client, topic)
+	//}
+}
+
+// 初始化
+func listenSubInit(client mqtt.Client, topic string) {
+
+	sub(client, topic)
+
 }
 
 func publish(client mqtt.Client, topic string, text string) {

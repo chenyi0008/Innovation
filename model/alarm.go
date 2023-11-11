@@ -8,6 +8,7 @@ import (
 
 type Alarm struct {
 	gorm.Model
+	SerialNum            string
 	Name                 string
 	UserId               uint
 	InspectEquipmentList []Inspect `gorm:"many2many:InspectAlarm;"`

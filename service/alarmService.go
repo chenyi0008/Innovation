@@ -8,10 +8,16 @@ import (
 	"strconv"
 )
 
+type alarmCreateRequest struct {
+	Name      string
+	SerialNum string
+}
+
 func AlarmCreate(c *gin.Context) {
-	name := c.Query("name")
-	if len(name) == 0 {
-		c.AbortWithStatusJSON(500, model.NewResponse(0, "设备命名不能为空", nil))
+	var request alarmCreateRequest
+	c.BindJSON(&request)
+	if len(request.SerialNum) == 0 || len(request.Name) == 0 {
+		c.AbortWithStatusJSON(500, model.NewResponse(0, "设备命名和序列号不能为空", nil))
 		return
 	}
 
@@ -23,8 +29,9 @@ func AlarmCreate(c *gin.Context) {
 	userId := value.(uint)
 
 	alarm := model.Alarm{
-		Name:   name,
-		UserId: userId,
+		Name:      request.Name,
+		UserId:    userId,
+		SerialNum: request.SerialNum,
 	}
 	save := model.AlarmSave(&alarm)
 	if save {

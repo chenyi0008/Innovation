@@ -10,9 +10,10 @@ import (
 )
 
 type createRequest struct {
-	Status   string
-	Name     string
-	Location string
+	Status    string
+	Name      string
+	Location  string
+	SerialNum string
 }
 
 func InspectCreate(c *gin.Context) {
@@ -24,11 +25,13 @@ func InspectCreate(c *gin.Context) {
 		id, _ := value.(uint)
 		println("userId", id)
 		inspect := &model.Inspect{
-			Status:   request.Status,
-			Name:     request.Name,
-			Location: request.Location,
-			UserId:   id,
+			Status:    request.Status,
+			Name:      request.Name,
+			Location:  request.Location,
+			UserId:    id,
+			SerialNum: request.SerialNum,
 		}
+		fmt.Println("SerialNum:", request.SerialNum)
 
 		model.InspcetSave(inspect)
 		c.JSON(200, model.NewResponse(1, "创建成功", nil))

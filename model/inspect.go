@@ -8,6 +8,7 @@ import (
 
 type Inspect struct {
 	gorm.Model
+	SerialNum          string
 	Status             string
 	Name               string
 	Location           string
