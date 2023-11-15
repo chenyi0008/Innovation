@@ -17,7 +17,26 @@ type InspectAlarm struct {
 
 func InspectAlarmSave(inspectAlarm *InspectAlarm) bool {
 	db := config.GetDb()
+
+	var list []InspectAlarm
+
+	err2 := db.Where("inspect_id = ? and alarm_id = ?", inspectAlarm.InspectId, inspectAlarm.AlarmId).
+		Or("inspect_id = ? and alarm_id = ?", inspectAlarm.AlarmId, inspectAlarm.InspectId).
+		Find(&list).Error
+
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	if len(list) != 0 {
+		return false
+	}
+
 	err := db.Save(inspectAlarm).Error
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
 	if err != nil {
 		fmt.Println(err.Error())
 		return false

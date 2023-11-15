@@ -128,7 +128,7 @@ func InspectBindAlarm(c *gin.Context) {
 		c.AbortWithStatusJSON(200, model.Succeed("保存成功", nil))
 		return
 	} else {
-		c.AbortWithStatusJSON(500, model.Failed("保存失败", nil))
+		c.AbortWithStatusJSON(200, model.Failed("请勿重复绑定", nil))
 		return
 	}
 }

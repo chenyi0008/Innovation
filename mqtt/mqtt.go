@@ -11,7 +11,7 @@ const (
 	username = "caibin"
 	password = "caibin@123"
 	port     = 1883
-	broker   = "106.52.223.188"
+	broker   = "111.230.194.164"
 	clientId = "go_mqtt_client2"
 )
 
@@ -49,7 +49,6 @@ func MqttMain() {
 		panic(token.Error())
 	}
 
-	topicList = append(topicList, "topic/test")
 	topicList = append(topicList, "topic1")
 	topicList = append(topicList, "topic2")
 	topicList = append(topicList, "topic3")

@@ -36,12 +36,12 @@ func detectDistribute(serialNum, instruct string) {
 		detectWarning(serialNum)
 	case "status":
 		println("status")
-
 	}
 }
 
 type detectWarningPublishInfo struct {
-	Timestamp int64 `json:"timestamp"`
+	Timestamp int64  `json:"timestamp"`
+	Position  string `json:"position"`
 }
 
 func detectWarning(serialNum string) {
@@ -52,6 +52,7 @@ func detectWarning(serialNum string) {
 			topic := fmt.Sprintf("device/warning/%s/warning", alarm.SerialNum)
 			publishInfo := detectWarningPublishInfo{
 				Timestamp: getTimestamp(),
+				Position:  "position1",
 			}
 			marshal, err := json.Marshal(publishInfo)
 			if err != nil {
