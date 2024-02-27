@@ -8,11 +8,8 @@ import (
 
 type InspectAlarm struct {
 	gorm.Model
-	InspectId    uint
-	AlarmId      uint
-	IsBuzzing    bool
-	IsFlashing   bool
-	ShowLocation bool
+	InspectId uint
+	AlarmId   uint
 }
 
 func InspectAlarmSave(inspectAlarm *InspectAlarm) bool {

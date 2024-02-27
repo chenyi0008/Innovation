@@ -9,8 +9,11 @@ import (
 )
 
 type alarmCreateRequest struct {
-	Name      string
-	SerialNum string
+	Name         string
+	SerialNum    string
+	IsBuzzing    bool
+	IsFlashing   bool
+	ShowLocation bool
 }
 
 func AlarmCreate(c *gin.Context) {
@@ -29,9 +32,12 @@ func AlarmCreate(c *gin.Context) {
 	userId := value.(uint)
 
 	alarm := model.Alarm{
-		Name:      request.Name,
-		UserId:    userId,
-		SerialNum: request.SerialNum,
+		Name:         request.Name,
+		UserId:       userId,
+		SerialNum:    request.SerialNum,
+		IsBuzzing:    request.IsBuzzing,
+		IsFlashing:   request.IsFlashing,
+		ShowLocation: request.ShowLocation,
 	}
 	save := model.AlarmSave(&alarm)
 	if save {
@@ -39,7 +45,6 @@ func AlarmCreate(c *gin.Context) {
 	} else {
 		c.AbortWithStatusJSON(500, model.NewResponse(0, "保存失败", nil))
 	}
-
 }
 
 func AlarmGetAll(c *gin.Context) {
@@ -59,8 +64,11 @@ func AlarmGetAll(c *gin.Context) {
 }
 
 type alarmUpdateRequest struct {
-	Name string
-	Id   uint
+	Name         string
+	Id           uint
+	IsBuzzing    bool
+	IsFlashing   bool
+	ShowLocation bool
 }
 
 func AlarmUpdate(c *gin.Context) {
@@ -75,8 +83,11 @@ func AlarmUpdate(c *gin.Context) {
 	}
 
 	alarm := &model.Alarm{
-		Name:   request.Name,
-		UserId: res.UserId,
+		Name:         request.Name,
+		UserId:       res.UserId,
+		IsBuzzing:    request.IsBuzzing,
+		IsFlashing:   request.IsFlashing,
+		ShowLocation: request.ShowLocation,
 		Model: gorm.Model{
 			ID: res.ID,
 		},

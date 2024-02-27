@@ -25,7 +25,7 @@ func GetRedisHelper() *RedisHelper {
 
 func NewRedisHelper() *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:         "101.35.238.12:6379",
+		Addr:         "101.35.238.12:8787",
 		Password:     "chenyi888",
 		DB:           0,
 		DialTimeout:  10 * time.Second,

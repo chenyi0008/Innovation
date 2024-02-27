@@ -11,6 +11,9 @@ type Alarm struct {
 	SerialNum            string
 	Name                 string
 	UserId               uint
+	IsBuzzing            bool
+	IsFlashing           bool
+	ShowLocation         bool
 	InspectEquipmentList []Inspect `gorm:"many2many:InspectAlarm;"`
 }
 

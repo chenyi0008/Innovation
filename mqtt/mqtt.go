@@ -12,7 +12,7 @@ const (
 	password = "caibin@123"
 	port     = 1883
 	broker   = "111.230.194.164"
-	clientId = "go_mqtt_client2"
+	clientId = "go_mqtt_client21"
 )
 
 var (
